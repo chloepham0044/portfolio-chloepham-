@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="slides-format" content="viewport">
+    <title>Thu Trang – MarCom Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-bg: #0d0f1a;
+            --color-bg-deep: #07080f;
+            --color-surface: #161827;
+            --color-text: #f0f2ff;
+            --color-text-secondary: #b8bdd8;
+            --color-text-muted: #6b7199;
+            --color-accent-1: #c084fc;
+            --color-accent-2: #818cf8;
+            --color-accent-3: #f472b6;
+            --color-glass-bg: rgba(255,255,255,0.05);
+            --color-glass-border: rgba(255,255,255,0.09);
+            --color-vignette: rgba(0,0,0,0.5);
+            --font-display: "Playfair Display", serif;
+            --font-body: "DM Sans", sans-serif;
+        }
+    </style>
+    <style>
+        :root { --color-bg:#0d0f1a; --color-text:#f0f2ff; --glow-color-rgb:192,132,252; }
+        *,*::before,*::after{box-sizing:border-box;}
+        html,body{background:var(--color-bg);margin:0;}
+        body{font-family:"DM Sans",sans-serif;color:var(--color-text);overflow:hidden;height:100vh;width:100vw;}
+        .deck{width:100vw;height:100vh;position:relative;}
+        .slide{position:absolute;top:0;left:0;width:100%;height:100%;background:var(--color-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:scale(0.96);transition:opacity 0.65s ease,transform 0.65s ease;pointer-events:none;overflow:hidden;}
+        .slide.active{opacity:1;transform:scale(1);pointer-events:all;}
+        .slide>.content{position:relative;z-index:2;width:100%;max-width:1080px;padding:clamp(1.5rem,4vw,3.5rem);}
+        .nav-controls{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:100;background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);padding:9px 22px;border-radius:40px;border:1px solid rgba(255,255,255,0.09);}
+        .nav-btn{width:36px;height:36px;border:none;background:rgba(255,255,255,0.06);color:#c084fc;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+        .nav-btn:hover{background:rgba(192,132,252,0.18);}
+        .slide-dots{display:flex;gap:7px;}
+        .slide-dots .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.15);cursor:pointer;transition:background 0.3s,transform 0.3s;}
+        .slide-dots .dot.active{background:#c084fc;transform:scale(1.3);}
+        .slide-counter{font-size:0.75rem;color:#6b7199;min-width:36px;text-align:center;}
+        .reveal{opacity:0;transform:translateY(18px);}
+        .gradient-mesh{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+        .blob{position:absolute;border-radius:50%;filter:blur(80px);}
+        @keyframes float-slow{0%{transform:translate(0,0) scale(1);}33%{transform:translate(50px,-40px) scale(1.1);}66%{transform:translate(-30px,35px) scale(0.92);}100%{transform:translate(0,0) scale(1);}}
+        @keyframes float-drift{0%{transform:translate(0,0) scale(1);}33%{transform:translate(-45px,-55px) scale(1.12);}66%{transform:translate(38px,28px) scale(0.9);}100%{transform:translate(0,0) scale(1);}}
+        @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+        .blob:nth-child(1){animation:float-slow 12s ease-in-out infinite;}
+        .blob:nth-child(2){animation:float-drift 16s ease-in-out infinite;}
+        .blob:nth-child(3){animation:float-slow 20s ease-in-out infinite reverse;}
+        .slide::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,var(--color-vignette) 100%);}
+        .text-glow{text-shadow:0 0 24px rgba(192,132,252,0.5),0 0 48px rgba(192,132,252,0.2);}
+        @keyframes glow-pulse{0%,100%{text-shadow:0 0 20px rgba(192,132,252,0.5);}50%{text-shadow:0 0 36px rgba(192,132,252,0.8),0 0 60px rgba(192,132,252,0.3);}}
+        .glow-pulse{animation:glow-pulse 3s ease-in-out infinite;}
+        .tag{display:inline-block;background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.25);color:#c084fc;border-radius:999px;padding:3px 12px;font-size:0.72rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
+        .card-glass{background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.09);border-radius:16px;}
+        .accent-bar{display:inline-block;width:36px;height:3px;border-radius:2px;background:linear-gradient(90deg,#c084fc,#818cf8);margin-bottom:1rem;}
+        .stat-num{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:900;font-family:"Playfair Display",serif;background:linear-gradient(135deg,#c084fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    </style>
+</head>
+<body>
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+<div class="deck">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-slide="1">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:520px;height:520px;top:-120px;right:-80px;background:#c084fc;opacity:0.13;"></div>
+        <div class="blob" style="width:340px;height:340px;bottom:-100px;left:-60px;background:#818cf8;opacity:0.11;"></div>
+        <div class="blob" style="width:220px;height:220px;top:40%;left:12%;background:#f472b6;opacity:0.08;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div style="font-size:80px;animation:float 3.5s ease-in-out infinite;margin-bottom:1.2rem;" class="reveal">✦</div>
+        <p class="reveal" style="font-size:0.78rem;letter-spacing:0.22em;text-transform:uppercase;color:#6b7199;margin-bottom:0.6rem;">Portfolio · 2026</p>
+        <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2.6rem,6vw,4.8rem);font-weight:900;background:linear-gradient(135deg,#c084fc 0%,#818cf8 50%,#f472b6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin:0 0 1rem;">Pham Nguyen<br>Thu Trang</h1>
+        <p class="reveal" style="font-size:clamp(0.9rem,1.6vw,1.15rem);color:#b8bdd8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2rem;">Digital-Native Marketing Communications</p>
+        <div class="reveal" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <span class="tag">Content Strategy</span>
+            <span class="tag">Digital Adoption</span>
+            <span class="tag">Data-Informed</span>
+            <span class="tag">Cross-functional</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 2: ABOUT ME -->
+<div class="slide" data-slide="2">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:400px;height:400px;top:-80px;right:-60px;background:#818cf8;opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-40px;background:#c084fc;opacity:0.07;"></div>
+    </div>
+    <div class="content" style="display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;">
+        <div>
+            <div class="accent-bar reveal"></div>
+            <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin:0 0 1.2rem;line-height:1.2;">About Me</h2>
+            <p class="reveal" style="color:#b8bdd8;font-size:1rem;line-height:1.75;margin-bottom:1rem;">I am a Marketing Management student at British University Vietnam, graduating in May 2026, with a GPA of 3.7/4.0. My academic foundation covers brand strategy, consumer behaviour, and integrated marketing, complemented by real-world experience across digital transformation projects.</p>
+            <p class="reveal" style="color:#b8bdd8;font-size:1rem;line-height:1.75;">What defines my approach is a blend of communication clarity and digital fluency. I do not just create content; I think about how it reaches people, whether they engage with it, and what it drives them to do next.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;">
+                <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;color:#6b7199;margin-bottom:0.3rem;">Education</p>
+                <p style="font-weight:600;font-size:0.95rem;margin-bottom:0.15rem;">British University Vietnam</p>
+                <p style="color:#b8bdd8;font-size:0.88rem;">Bachelor of Marketing Management &nbsp;·&nbsp; GPA 3.7/4.0</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;">
+                <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;color:#6b7199;margin-bottom:0.3rem;">Certifications</p>
+                <p style="color:#b8bdd8;font-size:0.88rem;line-height:1.6;">Cloud Computing Foundations · Duke University (Coursera)<br>IELTS 6.5 · Working Proficiency</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;">
+                <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;color:#6b7199;margin-bottom:0.3rem;">Scholarships</p>
+                <p style="color:#b8bdd8;font-size:0.88rem;line-height:1.6;">50% Scholarship · Cloud Technology · BUV (2023)<br>Talent Scholarship · Computer Science · Swinburne VN (2023)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: PROJECT INTRO NESTLE -->
+<div class="slide" data-slide="3">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:450px;height:450px;top:-100px;left:-80px;background:#c084fc;opacity:0.1;"></div>
+        <div class="blob" style="width:280px;height:280px;bottom:-60px;right:-40px;background:#f472b6;opacity:0.08;"></div>
+    </div>
+    <div class="content">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;" class="reveal">
+            <span class="tag">Project 01</span>
+            <span style="font-size:0.78rem;color:#6b7199;letter-spacing:0.06em;">May 2025 – Dec 2025</span>
+        </div>
+        <div class="accent-bar reveal"></div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.8vw,3rem);font-weight:700;margin:0 0 0.5rem;line-height:1.2;">Project Assistant</h2>
+        <h3 class="reveal" style="font-size:1rem;font-weight:500;color:#c084fc;margin:0 0 1.6rem;letter-spacing:0.05em;">NESTLÉ VIETNAM · Digital Learning &amp; Data</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+            <div class="card-glass reveal" style="padding:1.4rem;border-left:3px solid rgba(192,132,252,0.5);">
+                <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;color:#6b7199;margin-bottom:0.5rem;">The Challenge</p>
+                <p style="color:#b8bdd8;font-size:0.9rem;line-height:1.7;">POKA, a global connected worker platform, was being introduced to Vietnam for the first time. No local precedent existed. Everything had to be built from scratch in a 3-person team, within a factory environment where most employees had no prior exposure to the platform.</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.4rem;border-left:3px solid rgba(129,140,248,0.5);">
+                <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;color:#6b7199;margin-bottom:0.5rem;">My Role</p>
+                <p style="color:#b8bdd8;font-size:0.9rem;line-height:1.7;">I served as the communication and content bridge between the project team and the factory floor. I gathered user needs from Engineering, Production, and QA teams, then developed content and internal communication strategies to drive meaningful adoption across all departments.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: NESTLE – WHAT I DID -->
+<div class="slide" data-slide="4">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:380px;height:380px;top:-70px;right:-50px;background:#c084fc;opacity:0.08;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-30px;background:#818cf8;opacity:0.07;"></div>
+    </div>
+    <div class="content">
+        <div class="accent-bar reveal"></div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin:0 0 1.4rem;">What I Built &amp; Delivered</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.5rem;margin-top:2px;">🎬</span>
+                <div>
+                    <p style="font-weight:600;font-size:0.92rem;margin-bottom:0.3rem;">Digital Training Content</p>
+                    <p style="color:#b8bdd8;font-size:0.85rem;line-height:1.6;">Converted physical training documents into infographics and videos. Worked directly with SMEs to develop scripts, shoot footage, edit, and publish onto the platform.</p>
+                </div>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.5rem;margin-top:2px;">📊</span>
+                <div>
+                    <p style="font-weight:600;font-size:0.92rem;margin-bottom:0.3rem;">Training Progress Dashboard</p>
+                    <p style="color:#b8bdd8;font-size:0.85rem;line-height:1.6;">Built an automated reporting system in Power BI to help managers track completion status and let employees monitor their own learning progress in real time.</p>
+                </div>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.5rem;margin-top:2px;">📅</span>
+                <div>
+                    <p style="font-weight:600;font-size:0.92rem;margin-bottom:0.3rem;">Training Calendar &amp; Booking</p>
+                    <p style="color:#b8bdd8;font-size:0.85rem;line-height:1.6;">Designed and launched a scheduling and course booking system on the app, bringing transparency to training logistics for both trainers and trainees across the factory.</p>
+                </div>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;display:flex;gap:1rem;align-items:flex-start;">
+                <span style="font-size:1.5rem;margin-top:2px;">🔧</span>
+                <div>
+                    <p style="font-weight:600;font-size:0.92rem;margin-bottom:0.3rem;">Troubleshooting Feature</p>
+                    <p style="color:#b8bdd8;font-size:0.85rem;line-height:1.6;">Supported the rollout of a troubleshooting feature on the app to improve how line operators and maintenance teams communicated during production incidents.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: NESTLE RESULTS -->
+<div class="slide" data-slide="5">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:440px;height:440px;top:-90px;right:-70px;background:#818cf8;opacity:0.1;"></div>
+        <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-50px;background:#c084fc;opacity:0.09;"></div>
+        <div class="blob" style="width:180px;height:180px;top:35%;left:10%;background:#f472b6;opacity:0.07;"></div>
+    </div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content" style="text-align:center;">
+        <div class="accent-bar reveal" style="margin:0 auto 1rem;"></div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin:0 0 2rem;">Impact at Nestlé Vietnam</h2>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:1.6rem;">
+            <div class="card-glass reveal" style="padding:1.4rem 1rem;">
+                <div class="stat-num glow-pulse">0→100%</div>
+                <p style="color:#b8bdd8;font-size:0.8rem;margin-top:0.4rem;line-height:1.5;">Factory-wide<br>POKA adoption</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.4rem 1rem;">
+                <div class="stat-num glow-pulse">35</div>
+                <p style="color:#b8bdd8;font-size:0.8rem;margin-top:0.4rem;line-height:1.5;">Standard training<br>videos produced</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.4rem 1rem;">
+                <div class="stat-num glow-pulse">40%</div>
+                <p style="color:#b8bdd8;font-size:0.8rem;margin-top:0.4rem;line-height:1.5;">Reduction in<br>troubleshooting time</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.4rem 1rem;">
+                <div class="stat-num glow-pulse">6</div>
+                <p style="color:#b8bdd8;font-size:0.8rem;margin-top:0.4rem;line-height:1.5;">Automated dashboards<br>still in active use</p>
+            </div>
+        </div>
+        <p class="reveal" style="color:#b8bdd8;font-size:0.9rem;line-height:1.75;max-width:680px;margin:0 auto 1rem;">The training videos became the national reference format for Nestlé Vietnam and drew interest from the US market, where teams reached out to learn how they were produced.</p>
+        <div class="reveal" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+            <span class="tag">Content Production</span>
+            <span class="tag">Internal Communication</span>
+            <span class="tag">Digital Adoption</span>
+            <span class="tag">Data Storytelling</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: BUV TELESALES -->
+<div class="slide" data-slide="6">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:400px;height:400px;top:-80px;right:-60px;background:#f472b6;opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-40px;background:#818cf8;opacity:0.07;"></div>
+    </div>
+    <div class="content" style="display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;">
+        <div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;" class="reveal">
+                <span class="tag">Project 02</span>
+                <span style="font-size:0.78rem;color:#6b7199;letter-spacing:0.06em;">Jul 2024 – Sep 2024</span>
+            </div>
+            <div class="accent-bar reveal"></div>
+            <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;margin:0 0 0.4rem;line-height:1.2;">Telesales Intern</h2>
+            <h3 class="reveal" style="font-size:1rem;font-weight:500;color:#c084fc;margin:0 0 1.2rem;letter-spacing:0.05em;">BRITISH UNIVERSITY VIETNAM</h3>
+            <p class="reveal" style="color:#b8bdd8;font-size:0.92rem;line-height:1.75;margin-bottom:1rem;">I handled over 80 advisory calls per day with prospective students and parents, guiding them from early curiosity about academic programs toward genuine interest in applying.</p>
+            <p class="reveal" style="color:#b8bdd8;font-size:0.92rem;line-height:1.75;">This experience sharpened my ability to read an audience quickly, respond to uncertainty with clarity, and shape a message that speaks to what someone actually needs rather than what is easy to say.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1.2rem;">
+            <div class="card-glass reveal" style="padding:1.4rem;text-align:center;">
+                <div class="stat-num glow-pulse">80+</div>
+                <p style="color:#b8bdd8;font-size:0.82rem;margin-top:0.3rem;">Advisory calls per day</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.4rem;text-align:center;">
+                <div class="stat-num glow-pulse">40%</div>
+                <p style="color:#b8bdd8;font-size:0.82rem;margin-top:0.3rem;">Inquiry to registration interest conversion</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;border-left:3px solid rgba(192,132,252,0.4);">
+                <p style="color:#b8bdd8;font-size:0.85rem;line-height:1.65;">The real skill here was not persistence. It was learning how to present the same value in different ways depending on who was listening.</p>
+            </div>
+            <div class="reveal" style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span class="tag">Audience Understanding</span>
+                <span class="tag">Persuasive Communication</span>
+                <span class="tag">Conversion Mindset</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: VNDIRECT AI ANNOTATION -->
+<div class="slide" data-slide="7">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:420px;height:420px;top:-90px;left:-60px;background:#818cf8;opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;right:-40px;background:#c084fc;opacity:0.07;"></div>
+    </div>
+    <div class="content" style="display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;">
+        <div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;" class="reveal">
+                <span class="tag">Project 03</span>
+                <span style="font-size:0.78rem;color:#6b7199;letter-spacing:0.06em;">Sep 2023 – Jan 2024</span>
+            </div>
+            <div class="accent-bar reveal"></div>
+            <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;margin:0 0 0.4rem;line-height:1.2;">AI Annotation<br>Collaborator</h2>
+            <h3 class="reveal" style="font-size:1rem;font-weight:500;color:#c084fc;margin:0 0 1.2rem;letter-spacing:0.05em;">VNDIRECT</h3>
+            <p class="reveal" style="color:#b8bdd8;font-size:0.92rem;line-height:1.75;margin-bottom:1rem;">Consistently delivered 100% of daily KPI by annotating 400+ data points per day to support AI model training for a financial services platform.</p>
+            <p class="reveal" style="color:#b8bdd8;font-size:0.92rem;line-height:1.75;">Working at the input layer of an AI system showed me something that still shapes the way I work today: the output of any AI is only as useful as the clarity and context behind what you put in.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1.2rem;">
+            <div class="card-glass reveal" style="padding:1.4rem;text-align:center;">
+                <div class="stat-num glow-pulse">400+</div>
+                <p style="color:#b8bdd8;font-size:0.82rem;margin-top:0.3rem;">Data points annotated per day</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.4rem;text-align:center;">
+                <div class="stat-num glow-pulse">100%</div>
+                <p style="color:#b8bdd8;font-size:0.82rem;margin-top:0.3rem;">KPI achievement throughout the role</p>
+            </div>
+            <div class="card-glass reveal" style="padding:1.2rem 1.4rem;border-left:3px solid rgba(129,140,248,0.4);">
+                <p style="color:#b8bdd8;font-size:0.85rem;line-height:1.65;">This experience built my AI literacy from the ground up, and it is why I approach AI tools with both confidence and a critical eye, especially in content and research contexts.</p>
+            </div>
+            <div class="reveal" style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span class="tag">AI Literacy</span>
+                <span class="tag">Attention to Detail</span>
+                <span class="tag">Process Discipline</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: CLOSING -->
+<div class="slide" data-slide="8">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:500px;height:500px;top:-100px;right:-80px;background:#c084fc;opacity:0.14;"></div>
+        <div class="blob" style="width:340px;height:340px;bottom:-90px;left:-60px;background:#818cf8;opacity:0.11;"></div>
+        <div class="blob" style="width:200px;height:200px;top:38%;left:10%;background:#f472b6;opacity:0.08;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div class="accent-bar reveal" style="margin:0 auto 1.2rem;"></div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:900;background:linear-gradient(135deg,#c084fc,#818cf8,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0 0 1rem;line-height:1.2;">Let's Connect</h2>
+        <p class="reveal" style="color:#b8bdd8;font-size:0.98rem;line-height:1.8;max-width:580px;margin-bottom:2rem;">I am currently looking for a MarCom role where communication, digital tools, and meaningful user impact can come together. I would love the opportunity to bring this to IPA Group.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%;max-width:620px;" class="reveal">
+            <div class="card-glass" style="padding:1.1rem;text-align:center;">
+                <p style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:#6b7199;margin-bottom:0.3rem;">Email</p>
+                <p style="font-size:0.82rem;color:#c084fc;word-break:break-all;">forwork.trangpham<br>@gmail.com</p>
+            </div>
+            <div class="card-glass" style="padding:1.1rem;text-align:center;">
+                <p style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:#6b7199;margin-bottom:0.3rem;">Phone</p>
+                <p style="font-size:0.82rem;color:#c084fc;">+84 922 559 008</p>
+            </div>
+            <div class="card-glass" style="padding:1.1rem;text-align:center;">
+                <p style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:#6b7199;margin-bottom:0.3rem;">LinkedIn</p>
+                <p style="font-size:0.82rem;color:#c084fc;">trangpham-buv-vn</p>
+            </div>
+        </div>
+        <p class="reveal" style="margin-top:1.8rem;font-size:0.75rem;color:#6b7199;letter-spacing:0.08em;">Reference available upon request &nbsp;·&nbsp; Truong Thi Phuong Thao, HR Executive &amp; Project Owner, Nestlé Vietnam</p>
+    </div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+    <span class="slide-counter" id="counter">1 / 8</span>
+</div>
+
+<script>
+    let current=1;
+    const total=document.querySelectorAll('.slide').length;
+    const dotsContainer=document.getElementById('dots');
+    const counter=document.getElementById('counter');
+    for(let i=1;i<=total;i++){const dot=document.createElement('div');dot.className='dot'+(i===1?' active':'');dot.onclick=()=>goToSlide(i);dotsContainer.appendChild(dot);}
+    function goToSlide(n){const prev=document.querySelector('.slide.active');const next=document.querySelector(`.slide[data-slide="${n}"]`);if(prev)prev.classList.remove('active');if(next){next.classList.add('active');animateSlide(next);}current=n;updateNav();}
+    function changeSlide(dir){let n=current+dir;if(n<1)n=total;if(n>total)n=1;goToSlide(n);}
+    function updateNav(){document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i+1===current);});counter.textContent=current+' / '+total;}
+    document.addEventListener('keydown',(e)=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}});
+    let tx=0;document.addEventListener('touchstart',(e)=>{tx=e.touches[0].clientX;});document.addEventListener('touchend',(e)=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1);});
+    function animateSlide(slide){slide.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(18px)';el.offsetHeight;const delay=i*0.08;el.style.transition=`opacity 0.35s ease ${delay}s,transform 0.35s ease ${delay}s`;el.style.opacity='1';el.style.transform='translateY(0)';});}
+    document.addEventListener('mousemove',(e)=>{const s=document.querySelector('.mouse-spotlight');if(s)s.style.background=`radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px,rgba(192,132,252,0.06),transparent 40%)`;});
+    window.initParticles=function(canvas,options){if(!canvas)return;const ctx=canvas.getContext('2d');canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;const interactive=options.interactive!==false;const count=options.count||(interactive?55:18);let mx=-1000,my=-1000;const particles=Array.from({length:count},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,size:Math.random()*2.2+0.7,alpha:Math.random()*0.32+0.08}));if(interactive){canvas.addEventListener('mousemove',(e)=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});canvas.addEventListener('mouseleave',()=>{mx=-1000;my=-1000;});}(function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{if(interactive){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){const f=(120-dist)/120*2;p.vx+=(dx/dist)*f*0.1;p.vy+=(dy/dist)*f*0.1;}}p.vx*=0.98;p.vy*=0.98;p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(192,132,252,${p.alpha})`;ctx.fill();});requestAnimationFrame(animate);})();};
+    document.querySelectorAll('.particle-canvas').forEach(c=>window.initParticles(c,{interactive:true,count:55}));
+    document.querySelectorAll('.particle-canvas-ambient').forEach(c=>window.initParticles(c,{interactive:false,count:18}));
+    try{animateSlide(document.querySelector('.slide.active'));}catch(e){}
+</script>
+</body>
+</html>
