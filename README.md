@@ -1,2 +1,2 @@
 # portfolio-chloepham-
-My porfolio 
+My portfolio 
